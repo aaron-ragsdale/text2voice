@@ -36,6 +36,7 @@ export async function extractArticle(html){
 export async function fetchArticle(address,signal){
  const url=new URL(address);
  if(!['http:','https:'].includes(url.protocol)||url.username||url.password)throw Error('Enter a public HTTP or HTTPS article URL.');
+ if(window.text2voiceDesktop){const html=await window.text2voiceDesktop.fetchArticle(url.href);if(signal?.aborted)throw Error('Import canceled');return extractArticle(html)}
  const response=await fetch(url.href,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer',signal});
  if(!response.ok)throw Error('Website returned HTTP '+response.status);
  if(!/html|xhtml/i.test(response.headers.get('content-type')||''))throw Error('This URL does not return an HTML article.');
