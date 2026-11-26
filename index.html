@@ -56,7 +56,7 @@ function updateModeUI(report,opt){
 for(const id of ['citations','headers','references','columns','captions','notes'])$(id).onchange=()=>{if(sourceKey&&appliedMode==='academic')$('cleanStats').textContent='Changes not applied yet. Click Apply reading options.'};
 
 function sourceURL(){let u=new URL($('articleURL').value.trim());if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('Enter a public HTTP or HTTPS URL.');return u.href}
-$('openSource').onclick=()=>{try{window.open(sourceURL(),'_blank','noopener,noreferrer')}catch(e){$('articleInfo').textContent=e.message}};
+$('openSource').onclick=()=>{try{window.text2voiceDesktop?window.text2voiceDesktop.openSource(sourceURL()):window.open(sourceURL(),'_blank','noopener,noreferrer')}catch(e){$('articleInfo').textContent=e.message}};
 async function importWeb(kind){
  const file=$('htmlFile').files[0];if(kind==='file'&&!file)return;
  let url;try{if(kind==='url')url=sourceURL()}catch(e){$('articleInfo').textContent=e.message;return}
@@ -70,7 +70,7 @@ async function importWeb(kind){
   doc=null;$('pdf').hidden=true;$('view').textContent='Show PDF page';sourcePages=[];sourceText=null;articleBlocks=result.blocks;sourceName=result.title;sourceKey=kind==='url'?'article:'+url:'html:'+file.name+':'+file.size+':'+file.lastModified;
   $('readingMode').value='standard';$('academicOptions').hidden=true;rebuild(false);
   $('articleInfo').textContent='Imported with '+result.method+' · '+result.blocks.join(' ').split(/\s+/).length+' words. Review the extracted text, then press Play.';
- }catch(e){if(token!==docEpoch)return;$('articleInfo').textContent='Import failed: '+e.message+(kind==='url'?' · The site may block browser requests (CORS). Open the source, save as HTML, or paste the article text.':' · Try copying the article text.');}
+ }catch(e){if(token!==docEpoch)return;$('articleInfo').textContent='Import failed: '+e.message+(kind==='url'?' · The site may block requests or require login. Open the source, save as HTML, or paste the article text.':' · Try copying the article text.');}
  finally{clearTimeout(timer);if(articleController===controller){articleController=null;$('importURL').disabled=false}}
 }
 $('importURL').onclick=()=>importWeb('url');$('htmlFile').onchange=()=>importWeb('file');$('articleURL').onkeydown=e=>{if(e.key==='Enter'&&!$('importURL').disabled)importWeb('url')};
@@ -87,6 +87,7 @@ $('benchmark').onclick=async()=>{if(busy||generating||exporting)return;stop();bu
 $('engine').onchange=()=>{stop();cache.clear();ready.clear();prepared.clear();refreshGeneration();const e=$('engine').value,kitten=e==='kitten';$('voice').innerHTML=e==='mp-pocket'?voiceList('alba azelma cosette eponine fantine javert jean marius'.split(' ')):e==='mp-phonon'?voiceList('freya claire lucas lukas sofia'.split(' ')):kitten?voiceList(['Bella','Jasper','Luna','Bruno','Rosie','Hugo','Kiki','Leo']):e==='mp-kokoro'?voiceList('af_heart af_alloy af_aoede af_bella af_jessica af_kore af_nicole af_nova af_river af_sarah af_sky am_adam am_echo am_eric am_fenrir am_liam am_michael am_onyx am_puck am_santa bf_alice bf_emma bf_isabella bf_lily bm_daniel bm_fable bm_george bm_lewis ef_dora em_alex em_santa ff_siwis hf_alpha hf_beta hm_omega hm_psi if_sara im_nicola pf_dora pm_alex pm_santa zf_xiaobei zf_xiaoni zf_xiaoxiao zf_xiaoyi zm_yunjian zm_yunxi zm_yunxia zm_yunyang jf_alpha jf_gongitsune jf_nezumi jf_tebukuro jm_kumo'.split(' ')):kokoroVoices;$('device').innerHTML=e.startsWith('mp-')?'<option value="wasm">MediaPipe CPU</option>'+(e==='mp-kokoro'?'<option value="webgpu">MediaPipe hybrid GPU (experimental)</option>':''):processingOptions;$('device').value='wasm';$('device').disabled=kitten||e==='mp-pocket'||e==='mp-phonon';gaps=0;status('Model changed. Press Play or preview voice.')};
 
 function refreshGeneration(){
+ if(window.text2voiceDesktop)window.text2voiceDesktop.awake(generating).catch(console.error);
  const total=sections.length,count=sections.reduce((n,_,i)=>n+(prepared.has(keyFor(i))?1:0),0);
  $('generationProgress').max=Math.max(1,total);$('generationProgress').value=count;
  $('generateOnly').disabled=generating||!total||count===total;
@@ -96,7 +97,7 @@ function refreshGeneration(){
 }
 async function generateOnly(){
  if(generating||!sections.length)return;
- stop();let token=epoch;generating=true;refreshGeneration();
+ stop();let token=epoch;generating=true;if(window.text2voiceDesktop)$('persist').checked=true;refreshGeneration();
  try{
   for(let i=0;i<sections.length;i++){
    if(token!==epoch)return;
@@ -104,7 +105,7 @@ async function generateOnly(){
    const blob=await get(i);if(token!==epoch)return;
    prepared.set(key,blob);refreshGeneration();
   }
-  status('Audio ready. Press Play whenever you want.');
+  status('Audio ready. Press Play whenever you want.');window.text2voiceDesktop?.finished().catch(console.error);
  }catch(e){if(token===epoch)status('Generation failed: '+e.message)}
  finally{if(token===epoch){generating=false;$('download').hidden=true;refreshGeneration()}}
 }
@@ -126,4 +127,5 @@ async function start(i,continuous=false){if(!sections.length)return;stop();let t
 audio.onended=()=>{if(running&&idx+1<sections.length){if(!ready.has(keyFor(idx+1))&&!prepared.has(keyFor(idx+1)))gaps++;start(idx+1,true);}else{running=false;$('play').textContent='▶ Play';status('Finished.')}};audio.onpause=()=>{if(audio.src&&running&&!audio.ended){$('play').textContent='▶ Resume'}};audio.onplay=()=>{$('play').textContent='❚❚ Pause'};$('play').onclick=()=>{if(currentURL&&!audio.ended){if(audio.paused){running=true;audio.play().catch(e=>status(e.message))}else audio.pause()}else if(running){stop();status('Paused generation.')}else start(idx)};$('prev').onclick=()=>start(idx-1);$('next').onclick=()=>start(idx+1);$('stop').onclick=()=>{stop();status('Stopped')};$('speed').oninput=()=>{audio.playbackRate=+$('speed').value;$('rate').textContent=(+$('speed').value).toFixed(1)+'×'};$('voice').onchange=$('device').onchange=()=>{stop();cache.clear();ready.clear();prepared.clear();refreshGeneration();status('Voice settings updated. Press Play.')};$('save').onclick=()=>{if(!currentURL)return;let a=document.createElement('a');a.href=currentURL;a.download='text2voice-section-'+(idx+1)+'.wav';a.click()};$('view').onclick=()=>{if(!doc){status('Open a PDF first.');return}$('pdf').hidden=!$('pdf').hidden;$('view').textContent=$('pdf').hidden?'Show PDF page':'Hide PDF page';if(!$('pdf').hidden)renderPage().catch(e=>status(e.message))};$('resume').onclick=()=>{let i=0;try{i=Number(localStorage.getItem('text2voice:'+docKey)||0)}catch{}start(i)};
 $('load').onclick=async()=>{if(busy)return;busy=true;try{status('Loading model…');await request('load');status('Model ready.')}catch(e){status(e.message)}finally{busy=false;$('download').hidden=true}};$('preview').onclick=async()=>{if(busy)return;stop();let token=epoch;busy=true;try{status('Generating voice preview…');let b=await request('generate','Welcome to text to voice. Your documents, your pace, and a voice that feels natural.');if(token!==epoch)return;currentURL=URL.createObjectURL(b);audioLabel='Voice preview (not document audio)';updateAudioLabel();audio.src=currentURL;audio.playbackRate=+$('speed').value;await audio.play();status('Voice preview.')}catch(e){status(e.message)}finally{busy=false;$('download').hidden=true}};
 refreshGeneration();updateAudioLabel();
+if(window.text2voiceDesktop){$('persist').checked=true;const badge=document.querySelector('header .tag');if(badge)badge.textContent='Desktop · Local AI';const note=document.createElement('p');note.className='muted';note.textContent='Desktop mode: direct article import, background generation, and saved audio checkpoints. Keep the app open; sleep pauses processing. Reopen the same document and select the same voice to reuse saved audio.';$('generateOnly').after(note);}
 </script></body></html>
