@@ -16,6 +16,8 @@ No account or API key required. Open in Chrome or Edge for initial testing.
 
 ## Academic paper mode
 
+The document header shows the applied reading mode, cleanup summary and active filters. Use Spoken text / Original extracted text to compare the cleaned text with the original extraction (current page for PDFs). This is a visual preview only; audio always uses the applied reading mode. Audio and generation status identify the source mode. Changing filter checkboxes requires Apply reading options, which stops playback and resets prepared in-memory audio for the previous text.
+
 Select Academic paper under Reading mode. Toggle citation removal (common author-year parentheticals and numeric bracket citations), repeated margin headers and footers, page numbers, references, and two-column detection. Optional caption and footnote line filtering is off by default. Click Apply reading options to rebuild the spoken text without changing the PDF. The interface reports the cleanup and retains the current page where possible.
 
 These are heuristic rules, not semantic understanding. Unusual layouts, multiline captions and notes, equations, narrative citations, and unrecognized bibliography headings may require standard mode. Review the cleaned text before listening; numeric brackets can occasionally be meaningful content rather than citations.
