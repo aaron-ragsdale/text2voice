@@ -14,6 +14,12 @@ No account or API key required. Open in Chrome or Edge for initial testing.
 4. Listen, navigate sections, adjust playback speed or download a section as WAV.
 5. Reopen the same document to restore your saved section.
 
+## Academic paper mode
+
+Select Academic paper under Reading mode. Toggle citation removal (common author-year parentheticals and numeric bracket citations), repeated margin headers and footers, page numbers, references, and two-column detection. Optional caption and footnote line filtering is off by default. Click Apply reading options to rebuild the spoken text without changing the PDF. The interface reports the cleanup and retains the current page where possible.
+
+These are heuristic rules, not semantic understanding. Unusual layouts, multiline captions and notes, equations, narrative citations, and unrecognized bibliography headings may require standard mode. Review the cleaned text before listening; numeric brackets can occasionally be meaningful content rather than citations.
+
 ## How it works
 
 PDF.js extracts text locally. Kokoro-82M (via kokoro-js and Transformers.js) synthesizes speech in a Web Worker. Up to six upcoming sections are generated during playback. Optional startup buffering includes 1, 3, 5 sections or preparing all remaining sections. The browser stores reading position locally; the PDF itself is not persisted. Optional IndexedDB audio caching retains generated clips locally, including their text-based cache keys, until cleared. Full-document preparation holds clips in memory and can use substantial RAM.
@@ -23,6 +29,7 @@ Documents are not sent to an inference server by the app. Model weights and Java
 ## Files
 
 - index.html: responsive interface, document extraction, playback and navigation.
+- academic.js: geometry-based reading order and academic text cleanup.
 - voice-worker.js: local neural inference.
 
 ## Deploy
@@ -35,7 +42,7 @@ Selectable-text PDFs only; scanned PDFs need OCR. Complex multi-column documents
 
 ## Roadmap
 
-OCR, academic paper reading order and citation filtering, persistent document library, full-document audio export, additional speech models and offline asset caching.
+OCR, improved academic layout detection, persistent document library, full-document audio export, additional speech models and offline asset caching.
 
 ## Credits
 
