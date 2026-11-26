@@ -26,6 +26,12 @@ Paste an HTTP(S) article URL into Import a web article and choose Extract articl
 
 The importer uses Mozilla Readability (Apache 2.0) with a local structural fallback. It removes common advertising and navigation elements and extracts plain text, titles, headings and available author information. Imported markup is never inserted into the visible application. Review the extracted text before playback. Dynamic pages, paywalls, incomplete saved pages and unusual layouts may not import correctly. No third-party fetching proxy is used.
 
+## Prepare audio for later
+
+Choose Generate entire document to synthesize every section silently without autoplay. Progress is shown separately from reading progress. Cancel stops scheduling new sections; an in-flight inference may finish. Completed sections remain in memory until changing document, reading settings or voice/model settings. Enable optional saved audio caching before generation if you want to reuse clips after reopening the page. Once all sections are prepared, press Play or Download full WAV. The WAV contains the full extracted document at the model's original speed, not the playback speed slider setting.
+
+Keep the browser tab open and device awake during generation. Large documents and full WAV export can consume significant RAM. Browser storage quotas and background throttling apply.
+
 ## How it works
 
 PDF.js extracts text locally. Kokoro-82M (via kokoro-js and Transformers.js) synthesizes speech in a Web Worker. Up to six upcoming sections are generated during playback. Optional startup buffering includes 1, 3, 5 sections or preparing all remaining sections. The browser stores reading position locally; the PDF itself is not persisted. Optional IndexedDB audio caching retains generated clips locally, including their text-based cache keys, until cleared. Full-document preparation holds clips in memory and can use substantial RAM.
@@ -49,7 +55,7 @@ Selectable-text PDFs only; scanned PDFs need OCR. Complex multi-column documents
 
 ## Roadmap
 
-OCR, improved academic layout detection, persistent document library, full-document audio export, additional speech models and offline asset caching.
+OCR, improved academic layout detection, persistent document library, additional speech models and offline asset caching.
 
 ## Credits
 
