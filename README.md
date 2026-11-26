@@ -6,6 +6,21 @@ A local-first neural text-to-speech reading studio for PDFs and plain text.
 
 No account or API key required. Open in Chrome or Edge for initial testing.
 
+## Desktop app (Electron preview)
+
+The web version remains unchanged in deployment. To run the desktop version, install Node.js (current LTS), then in Terminal:
+
+```sh
+git clone https://github.com/aaron-ragsdale/text2voice.git
+cd text2voice/desktop
+npm install
+npm start
+```
+
+If you already cloned the repo, run `git pull` from its root instead. Subsequent launches only require `npm start` from `desktop` unless dependencies change.
+
+Desktop mode uses the same interface and local speech worker, with direct HTTP article retrieval through Electron's main process, background throttling disabled, saved audio caching enabled by default, and an OS sleep-prevention request during silent full-document generation. It releases that request on completion, cancellation or exit and sends a completion notification where supported. Minimize the app rather than closing it. Closing the laptop lid normally suspends processing. To resume after quitting, reopen the same document with the same cleanup and voice/model settings, then choose Generate entire document; cached sections are reused. This preview does not yet implement a persistent multi-document queue or automatic source restoration. Model dependencies still download from the internet; full offline use is not guaranteed. Paywalls, login and anti-bot restrictions still apply. The app keeps Chromium web security enabled and does not inject imported HTML into its interface. No packaged installer yet; this is a source-based development build.
+
 ## Getting started
 
 1. Open the website and select a PDF or paste text.
