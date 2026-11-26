@@ -92,3 +92,7 @@ Open Speech performance benchmark and run the same passage with each engine. Loa
 - [MediaPipe TTS documentation](https://developers.google.com/edge/mediapipe/solutions/audio/text_to_speech)
 - [PocketTTS by Kyutai](https://github.com/kyutai-labs/pocket-tts), model licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
 - [Phonon by Gradium, LiteRT bundle](https://huggingface.co/litert-community/phonon-31m-en), Apache 2.0.
+
+## Desktop native speech (v0.2)
+
+After pulling changes, run `npm install` again in `desktop` to install pinned `kokoro-js` 1.2.1 and its native ONNX dependencies. Native CPU Q8 is the default for Kokoro; Q4 is experimental. Models download at first use and the Node runtime uses its local model cache. Browser CPU/GPU remain selectable for comparison. KittenTTS and MediaPipe engines still use Chromium and may fail on some devices. The runtime label, model state and expandable diagnostics now distinguish these paths. Native inference runs in a separate Node worker, without enabling Node access in the renderer. No full offline guarantee or dedicated download manager yet.
