@@ -1,0 +1,12 @@
+{
+  "name": "text2voice-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^42.0.0"
+  }
+}
