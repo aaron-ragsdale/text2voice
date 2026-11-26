@@ -1,6 +1,6 @@
 {
   "name": "text2voice-desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "main": "main.cjs",
   "scripts": {
@@ -8,5 +8,8 @@
   },
   "devDependencies": {
     "electron": "^42.0.0"
+  },
+  "dependencies": {
+    "kokoro-js": "1.2.1"
   }
 }
