@@ -53,7 +53,7 @@ In repository Settings > Pages, select Deploy from a branch, main, / (root), the
 
 ## Current limitations
 
-Selectable-text PDFs only; scanned PDFs need OCR. Complex multi-column documents may be extracted out of order. Highlighting is section-level, not word-level. WAV export is per section. GPU mode, Q4 CPU mode and the community KittenTTS Nano browser engine are experimental. Kokoro Q8 CPU remains the default. Browser performance and autoplay restrictions vary.
+Selectable-text PDFs only; scanned PDFs need OCR. Complex multi-column documents may be extracted out of order. Highlighting is section-level, not word-level. WAV export supports individual sections and full prepared documents. GPU mode, Q4 CPU mode and the community KittenTTS Nano browser engine are experimental. Kokoro Q8 CPU remains the default. Browser performance and autoplay restrictions vary.
 
 ## Roadmap
 
@@ -67,3 +67,13 @@ OCR, improved academic layout detection, persistent document library, additional
 - [Kokoro](https://github.com/hexgrad/kokoro) (Apache 2.0 model)
 - [PDF.js](https://github.com/mozilla/pdf.js)
 - [Transformers.js](https://github.com/huggingface/transformers.js)
+
+## Experimental MediaPipe engines and benchmarking
+
+Choose MediaPipe Kokoro (CPU or hybrid WebGPU), PocketTTS English (CPU, about 163 MB), or Phonon (CPU, about 87 MB) in Speech model. Existing Kokoro ONNX Q8/Q4/GPU and KittenTTS remain available. The MediaPipe bundles are downloaded from Hugging Face on demand. Kokoro's GPU bundle is about 295 MB. GPU support varies by browser and hardware. All synthesis stays in the browser worker.
+
+Open Speech performance benchmark and run the same passage with each engine. Load time includes initialization/download if needed; first audio is the first generated PCM chunk for MediaPipe or the complete clip for ONNX/Kitten. Speed is audio duration divided by generation time; above 1x is faster than normal playback. The gaps column counts section transitions without ready audio in the session, not gaps measured during the benchmark itself. Results are session-only. MediaPipe streaming chunks are assembled into section WAV files to preserve playback, caching and export; immediate clause-by-clause playback is not yet implemented. These engines are experimental and require browser testing.
+
+- [MediaPipe TTS documentation](https://developers.google.com/edge/mediapipe/solutions/audio/text_to_speech)
+- [PocketTTS by Kyutai](https://github.com/kyutai-labs/pocket-tts), model licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+- [Phonon by Gradium, LiteRT bundle](https://huggingface.co/litert-community/phonon-31m-en), Apache 2.0.
