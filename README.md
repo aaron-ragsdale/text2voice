@@ -16,7 +16,7 @@ No account or API key required. Open in Chrome or Edge for initial testing.
 
 ## How it works
 
-PDF.js extracts text locally. Kokoro-82M (via kokoro-js and Transformers.js) synthesizes speech in a Web Worker. The next section is generated while the current one plays. The browser stores reading position locally; the PDF itself is not persisted.
+PDF.js extracts text locally. Kokoro-82M (via kokoro-js and Transformers.js) synthesizes speech in a Web Worker. Up to six upcoming sections are generated during playback. Optional startup buffering includes 1, 3, 5 sections or preparing all remaining sections. The browser stores reading position locally; the PDF itself is not persisted. Optional IndexedDB audio caching retains generated clips locally, including their text-based cache keys, until cleared. Full-document preparation holds clips in memory and can use substantial RAM.
 
 Documents are not sent to an inference server by the app. Model weights and JavaScript dependencies are downloaded from Hugging Face and CDN hosts. Internet is required for initial use; full offline operation is not guaranteed.
 
@@ -31,7 +31,7 @@ In repository Settings > Pages, select Deploy from a branch, main, / (root), the
 
 ## Current limitations
 
-Selectable-text PDFs only; scanned PDFs need OCR. Complex multi-column documents may be extracted out of order. Highlighting is section-level, not word-level. WAV export is per section. GPU mode is experimental. Browser performance and autoplay restrictions vary.
+Selectable-text PDFs only; scanned PDFs need OCR. Complex multi-column documents may be extracted out of order. Highlighting is section-level, not word-level. WAV export is per section. GPU mode, Q4 CPU mode and the community KittenTTS Nano browser engine are experimental. Kokoro Q8 CPU remains the default. Browser performance and autoplay restrictions vary.
 
 ## Roadmap
 
@@ -39,6 +39,7 @@ OCR, academic paper reading order and citation filtering, persistent document li
 
 ## Credits
 
+- [KittenTTS community JavaScript port](https://github.com/Algiras/kitten-tts-js) (Apache 2.0)
 - [Kokoro](https://github.com/hexgrad/kokoro) (Apache 2.0 model)
 - [PDF.js](https://github.com/mozilla/pdf.js)
 - [Transformers.js](https://github.com/huggingface/transformers.js)
